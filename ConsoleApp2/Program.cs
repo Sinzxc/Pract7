@@ -8,49 +8,63 @@ namespace ConsoleApplication1
         {
             try
             {
-                BinaryWriter fout = new BinaryWriter(new FileStream("binary.dat", FileMode.Create));
+                BinaryWriter fout = new BinaryWriter(new FileStream("binary.txt", FileMode.Create));
                 double d = 0;
+                double min=0, max=0;
                 int i = 1;
                 while (i < 11)
                 {
+                    d = Convert.ToDouble(Console.ReadLine());
                     fout.Write(d);
-                    d += 0.33;
-                    d *= Math.Pow(-1, i);
                     i++;
                 }
                 fout.Close();
                 i = 0;
-                FileStream f = new FileStream("binary.dat", FileMode.Open);
+                Console.WriteLine();
+                FileStream f = new FileStream("binary.txt", FileMode.Open);
                 BinaryReader fin = new BinaryReader(f);
                 try
                 {
                     while (true)
                     {
                         d = fin.ReadDouble();     // чтение из файла вещественных чисел 
-                        if (d < 0)
-                        {
-                            i++;
-                        }
+                        i++;
                     }
                 }
                 catch (EndOfStreamException e) { }
                 fin.Close();
                 f.Close();
 
-                fout = new BinaryWriter(new FileStream("binary.dat", FileMode.Append));
-                fout.Write(i);   // запись в конец файла количества отрицательных элементов
-                fout.Close();
-                Console.WriteLine("i= " + i);  //отладочная печать
-
-                fin = new BinaryReader(new FileStream("binary.dat", FileMode.Open));
+                fin = new BinaryReader(new FileStream("binary.txt", FileMode.Open));
                 for (int j = 0; j < 10; j++)   // печать содержащихся в файле вещественных чисел
                 {
+                    
                     d = fin.ReadDouble();
+                    if (j == 0)
+                    {
+                        max = d;
+                        min = d;
+                    }
                     Console.Write(d + " ");
+                    if (d < min)
+                        min = d;
+                    if (d > max)
+                        max = d;
                 }
-                i = fin.ReadInt32();   // считывание количества отрицательных элементов с конца файла
                 Console.WriteLine();
-                Console.WriteLine("negative = " + i);
+                fin.Close();
+
+                fout = new BinaryWriter(new FileStream("binary.txt", FileMode.Append));
+                fout.Write(Math.Abs(max-min));
+                fout.Close();
+                Console.WriteLine();
+                fin = new BinaryReader(new FileStream("binary.txt", FileMode.Open));
+                while (true)
+                    {
+                        d = fin.ReadDouble();     // чтение из файла вещественных чисел 
+                        Console.Write(d + " ");
+                        i++;
+                    }
                 fin.Close();
             }
             catch (Exception e)
